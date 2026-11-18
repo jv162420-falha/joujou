@@ -36,8 +36,8 @@ app.post('/infosimples', async (req, res) => {
   try {
     const r = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify(body || {})
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, ...(body || {}) })
     });
     const d = await r.json();
     if (!r.ok) return res.status(r.status).json(d);
