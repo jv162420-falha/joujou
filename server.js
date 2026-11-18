@@ -44,6 +44,7 @@ app.post('/apibrasil', async (req, res) => {
       body: JSON.stringify(body || {})
     });
     const d = await r.json();
+    console.log('APIBRASIL:', JSON.stringify(d));
     return res.json(d);
   } catch (e) { return res.status(500).json({ error: e.message }); }
 });
