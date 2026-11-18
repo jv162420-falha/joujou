@@ -14,9 +14,7 @@ app.get('/cep/:cep', async (req, res) => {
     const d = await r.json();
     if (!r.ok) return res.status(r.status).json(d);
     return res.json(d);
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
-  }
+  } catch (e) { return res.status(500).json({ error: e.message }); }
 });
 
 app.get('/cnpj/:cnpj', async (req, res) => {
@@ -25,26 +23,29 @@ app.get('/cnpj/:cnpj', async (req, res) => {
     const d = await r.json();
     if (!r.ok) return res.status(r.status).json(d);
     return res.json(d);
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
-  }
+  } catch (e) { return res.status(500).json({ error: e.message }); }
 });
 
-app.post('/infosimples', async (req, res) => {
-  const { token, endpoint, body } = req.body;
-  if (!token || !endpoint) return res.status(400).json({ error: 'token e endpoint obrigatorios' });
+app.post('/apibrasil', async (req, res) => {
+  const { token, service, body } = req.body;
+  if (!token || !service) return res.status(400).json({ error: 'token e service obrigatorios' });
+  const urls = {
+    cpf:      'https://gateway.apibrasil.io/api/v2/consulta/cpf/credits',
+    placa:    'https://gateway.apibrasil.io/api/v2/consulta/vehicles/credits',
+    telefone: 'https://gateway.apibrasil.io/api/v2/consulta/telefone/credits',
+    cnh:      'https://gateway.apibrasil.io/api/v2/consulta/cnh/credits',
+  };
+  const url = urls[service];
+  if (!url) return res.status(400).json({ error: 'service invalido' });
   try {
-    const r = await fetch(endpoint, {
+    const r = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, ...(body || {}) })
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(body || {})
     });
     const d = await r.json();
-    if (!r.ok) return res.status(r.status).json(d);
     return res.json(d);
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
-  }
+  } catch (e) { return res.status(500).json({ error: e.message }); }
 });
 
 app.listen(PORT, () => console.log(`Proxy rodando na porta ${PORT}`));
